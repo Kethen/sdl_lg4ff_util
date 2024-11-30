@@ -47,6 +47,7 @@ extern "C"{
 	extern int (*SDL_JoystickNumButtons)(SDL_Joystick *joystick);
 	extern int (*SDL_JoystickNumAxes)(SDL_Joystick *joystick);
 	extern void (*SDL_JoystickClose)(SDL_Joystick *joystick);
+	extern int (*SDL_JoystickSendEffect)(SDL_Joystick *joystick, const void *data, int size);
 
 	void init_sdl_bindings();
 #ifdef __cplusplus

@@ -3,9 +3,9 @@
 ### Features
 - runtime loading of sdl2
 - dump input from the SDL_Joystick interface from devices of interest
+- change wheel compat mode (currently through SDL_JoystickSendEffect)
 
 ### TODO Features
-- change wheel compat mode
 - send test ffb through SDL_Haptic, once it's implemented on that side
 
 ### Build (Linux/MacOS/FreeBSD)

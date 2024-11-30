@@ -18,11 +18,12 @@ typedef struct _joystick_ref {
 
 joystick_ref get_joystick_ref_copy(SDL_JoystickID instance);
 void remove_joystick_ref(SDL_JoystickID instance);
+std::map<SDL_JoystickID, joystick_ref> get_opened_joystick_map_copy();
 
 #ifndef __IS_SELF
 extern std::map<SDL_JoystickID, joystick_ref> opened_joystick_map;
 extern bool sdl_initialized;
 extern std::mutex opened_joystick_map_mutex;
-#endif
+#endif //__IS_SELF
 
 #endif //__MAIN_H

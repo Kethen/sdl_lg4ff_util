@@ -20,6 +20,7 @@ const char *(*SDL_JoystickPath)(SDL_Joystick *joystick);
 int (*SDL_JoystickNumHats)(SDL_Joystick *joystick);
 int (*SDL_JoystickNumButtons)(SDL_Joystick *joystick);
 int (*SDL_JoystickNumAxes)(SDL_Joystick *joystick);
+int (*SDL_JoystickSendEffect)(SDL_Joystick *joystick, const void *data, int size);
 void (*SDL_JoystickClose)(SDL_Joystick *joystick);
 
 const char *lib_paths[] = {
@@ -64,6 +65,7 @@ void init_sdl_bindings(){
 	LOAD_FUNCTION(SDL_JoystickNumHats);
 	LOAD_FUNCTION(SDL_JoystickNumButtons);
 	LOAD_FUNCTION(SDL_JoystickNumAxes);
+	LOAD_FUNCTION(SDL_JoystickSendEffect);
 	LOAD_FUNCTION(SDL_JoystickClose);
 	#undef STR
 	#undef LOAD_FUNCTION
