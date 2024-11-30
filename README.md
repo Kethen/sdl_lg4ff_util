@@ -7,3 +7,6 @@
 ### TODO Features
 - change wheel compat mode
 - send test ffb through SDL_Haptic, once it's implemented on that side
+
+### Build (Linux/MacOS/FreeBSD)
+run build.sh in project root, make sure `gcc` and `g++` are available
