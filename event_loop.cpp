@@ -7,13 +7,14 @@
 #include "sdl_binder.h"
 #include "main.h"
 #include "device_ids.h"
+#include "sdl_joystick.h"
 
 void sdl_event_loop(const char *log_path){
 	std::ofstream log_out;
 	try{
 		log_out.open(log_path, std::ios_base::trunc);
 	}catch(...){
-		LOG_ERR("cannot open %s for event logging, terminating\n");
+		LOG_ERR("cannot open %s for event logging, terminating\n", log_path);
 	}
 	LOG("opened %s for event logging\n", log_path);
 
@@ -79,7 +80,7 @@ void sdl_event_loop(const char *log_path){
 				SDL_JoyHatEvent *e = (SDL_JoyHatEvent *)&event;
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){
-					log_out << std::format("i: {:d} v: {:#04x} d: {:#04x} hat: {:d} {:d}\n", e->which, ref.vendor_id, ref.device_id, e->hat, e->value) << std::flush;
+					log_out << std::format("i: {:d} v: {:#04x} d: {:#04x} hat: {:d} {}\n", e->which, ref.vendor_id, ref.device_id, e->hat, joystick_get_hat_name(e->value)) << std::flush;
 				}
 				break;
 			}
