@@ -52,6 +52,7 @@ void sdl_event_loop(const char *log_path){
 					opened_joystick_map_mutex.unlock();
 					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, id, ref.vendor_id, ref.device_id) << std::flush;
 				}else{
+					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, id, ref.vendor_id, ref.device_id) << std::flush;
 					SDL_JoystickClose(handle);
 				}
 				break;
