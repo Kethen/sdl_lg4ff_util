@@ -1,6 +1,8 @@
 #include <fstream>
 #include <format>
 
+#include <string.h>
+
 #include "logging.h"
 #include "sdl_binder.h"
 #include "main.h"
@@ -42,11 +44,13 @@ void sdl_event_loop(const char *log_path){
 					.vendor_id = SDL_JoystickGetVendor(handle),
 					.device_id = SDL_JoystickGetProduct(handle),
 				};
+				memset(ref.path, 0, sizeof(ref.path));
+				strncpy(ref.path, SDL_JoystickPath(handle), sizeof(ref.path) - 1);
 				if(device_supported(ref.vendor_id, ref.device_id)){
 					opened_joystick_map_mutex.lock();
 					opened_joystick_map[id] = ref;
 					opened_joystick_map_mutex.unlock();
-					log_out << std::format("opened joydevice i: {:d} v: {:#04x} d: {:#04x}\n", id, ref.vendor_id, ref.device_id) << std::flush;
+					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, id, ref.vendor_id, ref.device_id) << std::flush;
 				}else{
 					SDL_JoystickClose(handle);
 				}
