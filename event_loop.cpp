@@ -63,7 +63,7 @@ void sdl_event_loop(const char *log_path){
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){
 					remove_joystick_ref(e->which);
-					log_out << std::format("removed joydevice i: {:d} v: {:#04x} d: {:#04x}\n", e->which, ref.vendor_id, ref.device_id) << std::flush;
+					log_out << std::format("removed joydevice {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, e->which, ref.vendor_id, ref.device_id) << std::flush;
 				}
 				break;
 			}
