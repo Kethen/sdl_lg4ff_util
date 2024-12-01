@@ -30,6 +30,7 @@ static void print_actions(std::string status){
 	LOG("actions:\n\n");
 
 	LOG("1. Change wheel mode\n");
+	LOG("2. Set wheel LED\n");
 	LOG("\n\n")
 
 	LOG("Status:\n");
@@ -39,9 +40,7 @@ static void print_actions(std::string status){
 	LOG("Select action:");
 }
 
-static std::string change_mode_menu(){
-	clear_console();
-
+static int wheel_select_menu(){
 	LOG("available wheels:\n\n");
 
 	auto map_copy = get_opened_joystick_map_copy();
@@ -57,6 +56,18 @@ static std::string change_mode_menu(){
 	int wheel_id = get_input_int();
 
 	if(!map_copy.contains(wheel_id)){
+		return -1;
+	}
+
+	return wheel_id;
+}
+
+static std::string change_mode_menu(){
+	clear_console();
+
+	int wheel_id = wheel_select_menu();
+
+	if(wheel_id == -1){
 		return std::format("wheel id {:d} not found.", wheel_id);
 	}
 
@@ -111,6 +122,39 @@ static std::string change_mode_menu(){
 	return status;
 }
 
+static std::string set_led_menu(){
+	clear_console();
+
+	int wheel_id = wheel_select_menu();
+
+	if(wheel_id == -1){
+		return std::format("wheel id {:d} not found.", wheel_id);
+	}
+
+	LOG("Set LED intensity (0 - 5):");
+	int led_intensity = get_input_int();
+	if(led_intensity < 0){
+		led_intensity = 0;
+	}
+	if(led_intensity > 5){
+		led_intensity = 5;
+	}
+	uint8_t sdl_led_intensity = (255 * led_intensity) / 5;
+
+	std::string status = std::format("wheel {:d} removed during SDL_JoystickSetLED", wheel_id);
+	opened_joystick_map_mutex.lock();
+	if(opened_joystick_map.contains(wheel_id)){
+		if(SDL_JoystickSetLED(opened_joystick_map[wheel_id].handle, sdl_led_intensity, 0, 0) == 0){
+			status = std::format("SDL_JoystickSetLED on wheel {:d} succeeded", wheel_id);
+		}else{
+			status = std::format("SDL_JoystickSetLED failed on wheel {:d}", wheel_id);
+		}
+	}
+	opened_joystick_map_mutex.unlock();
+
+	return status;
+}
+
 void menu_loop(std::string log_path){
 	std::string status = std::format("Events are logged at {}", log_path);
 
@@ -120,6 +164,9 @@ void menu_loop(std::string log_path){
 		switch(input_val){
 			case 1:
 				status = change_mode_menu();
+				break;
+			case 2:
+				status = set_led_menu();
 				break;
 			default:
 				status = std::format("bad option {:d}", input_val);
