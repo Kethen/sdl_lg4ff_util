@@ -52,7 +52,7 @@ static int wheel_select_menu(){
 	auto map_copy = get_opened_joystick_map_copy();
 	auto itr = map_copy.begin();
 	while(itr != map_copy.end()){
-		LOG("%d. %04x:%04x %s", itr->first, itr->second.vendor_id, itr->second.device_id, itr->second.path);
+		LOG("%d. %04x:%04x %s %s", itr->first, itr->second.vendor_id, itr->second.device_id, itr->second.path, joystick_get_type_name(itr->second.type).c_str());
 		itr++;
 	}
 

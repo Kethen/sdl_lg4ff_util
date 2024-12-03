@@ -44,6 +44,7 @@ void sdl_event_loop(const char *log_path){
 					.handle = handle,
 					.vendor_id = SDL_JoystickGetVendor(handle),
 					.device_id = SDL_JoystickGetProduct(handle),
+					.type = SDL_JoystickGetType(handle),
 				};
 				memset(ref.path, 0, sizeof(ref.path));
 				strncpy(ref.path, SDL_JoystickPath(handle), sizeof(ref.path) - 1);
@@ -51,9 +52,9 @@ void sdl_event_loop(const char *log_path){
 					opened_joystick_map_mutex.lock();
 					opened_joystick_map[id] = ref;
 					opened_joystick_map_mutex.unlock();
-					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, id, ref.vendor_id, ref.device_id) << std::flush;
+					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x} t: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type)) << std::flush;
 				}else{
-					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, id, ref.vendor_id, ref.device_id) << std::flush;
+					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x} t: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type)) << std::flush;
 					SDL_JoystickClose(handle);
 				}
 				break;

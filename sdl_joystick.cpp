@@ -28,4 +28,29 @@ std::string joystick_get_hat_name(int hat_value){
 	}
 }
 
-
+std::string joystick_get_type_name(SDL_JoystickType type){
+	switch(type){
+		case SDL_JOYSTICK_TYPE_UNKNOWN:
+			return "unknown";
+		case SDL_JOYSTICK_TYPE_GAMECONTROLLER:
+			return "game controller";
+		case SDL_JOYSTICK_TYPE_WHEEL:
+			return "wheel";
+		case SDL_JOYSTICK_TYPE_ARCADE_STICK:
+			return "arcade stick";
+		case SDL_JOYSTICK_TYPE_FLIGHT_STICK:
+			return "flight stick";
+		case SDL_JOYSTICK_TYPE_DANCE_PAD:
+			return "dance pad";
+		case SDL_JOYSTICK_TYPE_GUITAR:
+			return "guitar";
+		case SDL_JOYSTICK_TYPE_DRUM_KIT:
+			return "drum kit";
+		case SDL_JOYSTICK_TYPE_ARCADE_PAD:
+			return "arcade pad";
+		case SDL_JOYSTICK_TYPE_THROTTLE:
+			return "throttle";
+		default:
+			return "unknown (undefined)";
+	}
+}
