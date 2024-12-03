@@ -256,7 +256,7 @@ static std::string run_haptic_test_routine(){
 		ASSERT(SDL_HapticGetEffectStatus(haptic, constant_effect_id));
 		sleep(6);
 		ASSERT(!SDL_HapticGetEffectStatus(haptic, constant_effect_id));
-		LOG("Effect should be stopped naturally, please verify\n");
+		LOG("Effect should have stopped naturally, please verify\n");
 		sleep(3);
 
 		LOG("Playing effect again\n");
