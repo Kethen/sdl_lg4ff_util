@@ -48,6 +48,8 @@ int (*SDL_HapticRumbleInit)(SDL_Haptic * haptic);
 int (*SDL_HapticRumblePlay)(SDL_Haptic * haptic, float strength, Uint32 length );
 int (*SDL_HapticRumbleStop)(SDL_Haptic * haptic);
 
+SDL_bool (*SDL_IsGameController)(int joystick_index);
+
 const char *(*SDL_GetError)();
 
 const char *lib_paths[] = {
@@ -119,6 +121,8 @@ void init_sdl_bindings(){
 	LOAD_FUNCTION(SDL_HapticRumbleInit);
 	LOAD_FUNCTION(SDL_HapticRumblePlay);
 	LOAD_FUNCTION(SDL_HapticRumbleStop);
+
+	LOAD_FUNCTION(SDL_IsGameController);
 
 	LOAD_FUNCTION(SDL_GetError);
 	#undef STR

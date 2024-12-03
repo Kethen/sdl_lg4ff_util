@@ -77,6 +77,8 @@ extern int (*SDL_HapticRumbleInit)(SDL_Haptic * haptic);
 extern int (*SDL_HapticRumblePlay)(SDL_Haptic * haptic, float strength, Uint32 length );
 extern int (*SDL_HapticRumbleStop)(SDL_Haptic * haptic);
 
+extern SDL_bool (*SDL_IsGameController)(int joystick_index);
+
 extern const char *(*SDL_GetError)();
 void init_sdl_bindings();
 

@@ -15,6 +15,7 @@ typedef struct _joystick_ref {
 	uint32_t device_id;
 	char path[1024];
 	SDL_JoystickType type;
+	bool is_controller;
 } joystick_ref;
 
 joystick_ref get_joystick_ref_copy(SDL_JoystickID instance);

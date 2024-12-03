@@ -2,6 +2,7 @@
 #include <format>
 
 #include <string.h>
+#include <stdbool.h>
 
 #include "logging.h"
 #include "sdl_binder.h"
@@ -18,7 +19,7 @@ void sdl_event_loop(const char *log_path){
 	}
 	LOG("opened %s for event logging\n", log_path);
 
-	int ret = SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
+	int ret = SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC);
 	if(ret != 0){
 		LOG_ERR("failed initializing SDL, terminating\n");
 		exit(1);
@@ -35,6 +36,7 @@ void sdl_event_loop(const char *log_path){
 			case SDL_JOYDEVICEADDED:{
 				SDL_JoyDeviceEvent *e = (SDL_JoyDeviceEvent *)&event;
 				SDL_Joystick *handle = SDL_JoystickOpen(e->which);
+				bool is_controller = SDL_IsGameController(e->which);
 				if(handle == NULL){
 					log_out << std::format("failed opening joy device with index {:d}\n", e->which) << std::flush;
 					break;
@@ -45,6 +47,7 @@ void sdl_event_loop(const char *log_path){
 					.vendor_id = SDL_JoystickGetVendor(handle),
 					.device_id = SDL_JoystickGetProduct(handle),
 					.type = SDL_JoystickGetType(handle),
+					.is_controller = is_controller,
 				};
 				memset(ref.path, 0, sizeof(ref.path));
 				strncpy(ref.path, SDL_JoystickPath(handle), sizeof(ref.path) - 1);
@@ -52,10 +55,10 @@ void sdl_event_loop(const char *log_path){
 					opened_joystick_map_mutex.lock();
 					opened_joystick_map[id] = ref;
 					opened_joystick_map_mutex.unlock();
-					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x} t: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type)) << std::flush;
+					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
 					log_out << std::format("hats: {:d}, buttons: {:d}, axes: {:d}\n", SDL_JoystickNumHats(handle), SDL_JoystickNumButtons(handle), SDL_JoystickNumAxes(handle)) << std::flush;
 				}else{
-					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x} t: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type)) << std::flush;
+					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
 					SDL_JoystickClose(handle);
 				}
 				break;
