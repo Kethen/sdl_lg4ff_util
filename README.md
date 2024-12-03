@@ -5,9 +5,10 @@
 - dump input from the SDL_Joystick interface from devices of interest
 - change wheel compat mode (currently through SDL_JoystickSendEffect)
 - set wheel LED (currently through SDL_SDL_JoystickSetLED)
+- send test ffb through SDL_Haptic
 
 ### TODO Features
-- send test ffb through SDL_Haptic, once it's implemented on that side
+- test ffb ramp
 
 ### Build (Linux/MacOS/FreeBSD)
 run build.sh in project root, make sure `gcc` and `g++` are available

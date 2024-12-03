@@ -6,12 +6,14 @@
 #define LOG(...) { \
 	pthread_mutex_lock(&log_mutex); \
 	fprintf(stdout, __VA_ARGS__); \
+	fflush(stdout); \
 	pthread_mutex_unlock(&log_mutex); \
 }
 
 #define LOG_ERR(...) { \
 	pthread_mutex_lock(&log_mutex); \
 	fprintf(stderr, __VA_ARGS__); \
+	fflush(stderr); \
 	pthread_mutex_unlock(&log_mutex); \
 }
 
