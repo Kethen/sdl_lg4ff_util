@@ -60,7 +60,7 @@ void sig_term(int _){
 }
 
 int main(){
-	setenv("SDL_JOYSTICK_HIDAPI_LG4FF", "1", 1);
+	//setenv("SDL_JOYSTICK_HIDAPI_LG4FF", "1", 1);
 
 	init_logging();
 	init_sdl_bindings();
