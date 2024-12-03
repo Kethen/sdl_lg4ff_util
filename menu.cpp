@@ -305,7 +305,7 @@ static std::string run_haptic_test_routine(){
 		SDL_HapticDestroyEffect(haptic, constant_effect_id);
 		memset(&effect, 0, sizeof(SDL_HapticEffect));
 		effect.type = SDL_HAPTIC_FRICTION;
-		effect.constant.direction.type = SDL_HAPTIC_STEERING_AXIS;
+		effect.condition.direction.type = SDL_HAPTIC_STEERING_AXIS;
 		effect.condition.right_sat[0] = 0x7fff;
 		effect.condition.left_sat[0] = 0x7fff;
 		effect.condition.right_coeff[0] = 0x2000;
@@ -324,12 +324,13 @@ static std::string run_haptic_test_routine(){
 		effect.type = SDL_HAPTIC_DAMPER;
 
 		int damper_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		// sdl internally allocated a sine effect for rumble
 		ASSERT(damper_effect_id == 2);
 		ASSERT(SDL_HapticRunEffect(haptic, damper_effect_id, 1) == 0);
 		LOG("Testing damper effect, please verify\n");
 		sleep(5);
 		ASSERT(SDL_HapticStopEffect(haptic, damper_effect_id) == 0);
-		LOG("damper effect stopped, please verify\n");
+		LOG("Damper effect stopped, please verify\n");
 		sleep(3);
 
 		effect.type = SDL_HAPTIC_SPRING;;
@@ -337,18 +338,33 @@ static std::string run_haptic_test_routine(){
 		int spring_effect_id = SDL_HapticNewEffect(haptic, &effect);
 		ASSERT(spring_effect_id == 3);
 		ASSERT(SDL_HapticRunEffect(haptic, spring_effect_id, 1) >= 0);
-		LOG("Test spring effect, please verify\n");
+		LOG("Testing spring effect, please verify\n");
 		sleep(5);
 		ASSERT(SDL_HapticStopEffect(haptic, spring_effect_id) == 0);
-		LOG("spring effect stopped, please verify\n");
+		LOG("Spring effect stopped, please verify\n");
 		sleep(3);
 
 		LOG("Testing autocenter, please verify\n");
 		ASSERT(SDL_HapticSetAutocenter(haptic, 50) == 0);
 		sleep(5);
 		ASSERT(SDL_HapticSetAutocenter(haptic, 0) == 0);
-		LOG("autocenter stopped, please verify");
+		LOG("Autocenter stopped, please verify\n");
 		sleep(3);
+
+		LOG("Testing ramp effect\n");
+		memset(&effect, 0, sizeof(SDL_HapticEffect));
+		effect.type = SDL_HAPTIC_RAMP;
+		effect.ramp.direction.type = SDL_HAPTIC_STEERING_AXIS;
+		effect.ramp.length = 5000;
+		effect.ramp.start = 65535 / 8;
+		effect.ramp.end = 65535 / 4;
+		int ramp_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		ASSERT(ramp_effect_id == 4);
+		ASSERT(SDL_HapticRunEffect(haptic, ramp_effect_id, 1) >= 0);
+		sleep(6);
+		LOG("ramp effect should have stopped natrually");
+		sleep(3);
+		
 
 		#undef ASSERT
 		SDL_HapticClose(haptic);
