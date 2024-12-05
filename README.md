@@ -38,17 +38,17 @@ make -j $(sysctl -n hw.ncpu) # make sure some kind of xcode is installed and con
 
 ### Preparing device node permission
 
-- Linux
+#### Linux
 
 Place udev rule from https://raw.githubusercontent.com/Kethen/lg4ff_userspace/refs/heads/main/60-lg4ff-userspace.rules to `/etc/udev/rules.d`, then run `sudo udevadm control --reload; sudo udevadm trigger`, that will flag supported wheels' /dev/hidraw* nodes as user accessible
 
-- FreeBSD
+#### FreeBSD
 
 It's weird, it needs both hidraw device AND raw usb access to work, and it looks like neither `devfs.conf` nor `devfs.rules` can accurately only make supported device accessible. For now just go for `sudo chmod 666 /dev/usb/*; sudo chmod /dev/hidraw*`. Perhaps a service for tagging just supported device is needed, because flagging every usb device raw accessible has security implications.
 
 For `/dev/hidraw*` to show up at all, one would also need to add `hw.usb.usbhid.enable=1` to /etc/sysctl.conf, as well as adding `usbhid_load="YES"` and `hidraw_load="YES"` to `/boot/loader.conf`
 
-- MacOS
+#### MacOS
 
 It does not look like one need to do anything to allow IOHidManager access to wheels, it should just work, at least on intel Macs.
 
