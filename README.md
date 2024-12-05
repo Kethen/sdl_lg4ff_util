@@ -25,6 +25,9 @@ cd sdl_build
 # configure project (FreeBSD)
 ../configure --enable-hidapi=yes --enable-hidapi-libusb=yes
 
+# configure project (MacOS)
+../configure --enable-hidapi=yes
+
 # build project (Linux)
 make -j $(nproc) # make sure gnu make and gcc are installed
 
