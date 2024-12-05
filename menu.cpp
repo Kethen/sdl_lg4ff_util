@@ -362,9 +362,24 @@ static std::string run_haptic_test_routine(){
 		ASSERT(ramp_effect_id == 4);
 		ASSERT(SDL_HapticRunEffect(haptic, ramp_effect_id, 1) >= 0);
 		sleep(6);
-		LOG("ramp effect should have stopped natrually");
+		LOG("Ramp effect should have stopped natrually\n");
 		sleep(3);
 		
+		LOG("Starting rummble again\n");
+		ASSERT(SDL_HapticRumblePlay(haptic, 0.5, SDL_HAPTIC_INFINITY) == 0);
+		sleep(3);
+		LOG("Adjusting gain to 0\n");
+		ASSERT(SDL_HapticSetGain(haptic, 0) == 0);
+		sleep(3);
+		LOG("Adjusting gain to 50\n");
+		ASSERT(SDL_HapticSetGain(haptic, 50) == 0);
+		sleep(3);
+		LOG("Adjusting gain to 100\n");
+		ASSERT(SDL_HapticSetGain(haptic, 100) == 0);
+		sleep(3);
+		LOG("Rumble should stop now\n");
+		ASSERT(SDL_HapticRumbleStop(haptic) == 0);
+		sleep(3);
 
 		#undef ASSERT
 		SDL_HapticClose(haptic);
