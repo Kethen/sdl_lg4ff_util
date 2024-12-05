@@ -35,7 +35,7 @@ make -j $(nproc) # make sure gnu make and gcc are installed
 gmake -j $(sysctl -n hw.ncpu) # make sure gnu make and gcc are installed
 
 # build project (MacOS)
-make -j $(sysctl -n hw.ncpu) # make sure some kind of xcode is installed and configured, alternatively the Xcode project file should also work
+make -j $(sysctl -n hw.ncpu) # make sure some kind of Xcode is installed and configured, alternatively the Xcode project file should also work
 
 ```
 
