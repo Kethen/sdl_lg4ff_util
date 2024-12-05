@@ -26,10 +26,10 @@ cd sdl_build
 ../configure --enable-hidapi=yes --enable-hidapi-libusb=yes
 
 # build project (Linux)
-make -j $(nproc) # make sure gnu make and gcc is installed
+make -j $(nproc) # make sure gnu make and gcc are installed
 
 # build project (FreeBSD)
-gmake -j $(sysctl -n hw.ncpu) # make sure gnu make and gcc is installed
+gmake -j $(sysctl -n hw.ncpu) # make sure gnu make and gcc are installed
 
 # build project (MacOS)
 make -j $(sysctl -n hw.ncpu) # make sure some kind of xcode is installed and configured, alternatively the Xcode project file should also work
