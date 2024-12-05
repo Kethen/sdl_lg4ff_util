@@ -8,7 +8,7 @@
 - send test ffb through SDL_Haptic
 
 ### Build (Linux/MacOS/FreeBSD)
-run `bash build.sh` in project root, make sure `gcc` and `g++` are available
+run `bash build.sh` in project root, make sure `gcc` and `g++` are available, on MacOS that would mean having some kind of Xcode installed and configured
 
 ### Building SDL
 
