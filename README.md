@@ -53,7 +53,7 @@ For `/dev/hidraw*` to show up at all, one would also need to add `hw.usb.usbhid.
 
 #### MacOS
 
-It does not look like one need to do anything to allow IOHidManager access to wheels, it should just work, at least on intel Macs.
+It does not look like one need to do anything to allow IOHidManager access to wheels, it should just work, at least on intel Macs
 
 ### Usage
 In a terminal, place `libSDL2-2.0.so.0` or `libSDL2-2.0.0.dylib` in the current directory (./), then run `build/sdl_lg4ff_util`; you will be greeted with a text based UI
@@ -78,3 +78,35 @@ cat ~/Library/Developer/Xcode/DerivedData/SDL-<?>/Build/Products/Debug/libSDL2.d
 
 sdl joystick events are logged in `./sdl_event_log.txt`
 
+### Testing with WINE
+
+#### Linux/FreeBSD using LD_LIBRARY_PATH
+
+```
+# close all wine first and wait until all wineserver instances are gone
+wineserver -w
+# run wine with the library and confirm that the wheel is loaded in control panel
+LD_LIBRARY_PATH="$(realpath .)" wine control
+# run wine ffb applications
+LD_LIBRARY_PATH="$(realpath .)" wine start <path to application>
+```
+
+#### MacOS with CrossOver
+
+1. Fully shutdown CrossOver
+2. Go to your crossover .app directory (Show package content)
+3. Navigate to Contents/SharedSupport/CrossOver/lib64
+4. Rename libSDL2-2.0.0.dylib to something else
+5. Place your built libSDL2-2.0.0.dylib into the directory
+6. Check Game Controllers tab in a bottle to see if the wheel is loaded
+7. Launch FFB applications in CrossOver
+
+#### MacOS with Kegworks keg instances
+
+1. Fully shutdown the keg instance
+2. Go to your keg directory (~/Applications/Kegworks/) and navigate into the .app directory (Show package content)
+3. Navigate to Contents/Frameworks
+4. Rename libSDL2-2.0.0.dylib to something else
+5. Place your built libSDL2-2.0.0.dylib into the directory
+6. Launch control panel in the keg to see if the wheel is loaded in game controller settings
+7. Launch FFB applications in the keg
