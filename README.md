@@ -65,14 +65,14 @@ cat <sdl build directory>/build/.libs/libSDL2-2.0.so.0 > libSDL2-2.0.so.0
 ```
 
 ```
-# MacOS Xcode:
-cat ~/Library/Developer/Xcode/DerivedData/SDL-<?>/Build/Products/Debug/libSDL2.dylib > libSDL2-2.0.0.dylib
+# MacOS make:
+cat <sdl build directory>/build/.libs/libSDL2-2.0.0.dylib > libSDL2-2.0.0.dylib
 ./build/sdl_lg4ff_util
 ```
 
 ```
-# MacOS make:
-cat <sdl build directory>/build/.libs/libSDL2-2.0.0.dylib > libSDL2-2.0.0.dylib
+# MacOS Xcode:
+cat ~/Library/Developer/Xcode/DerivedData/SDL-<?>/Build/Products/Debug/libSDL2.dylib > libSDL2-2.0.0.dylib
 ./build/sdl_lg4ff_util
 ```
 
