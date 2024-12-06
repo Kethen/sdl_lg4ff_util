@@ -32,8 +32,8 @@ std::string joystick_get_type_name(SDL_JoystickType type){
 	switch(type){
 		case SDL_JOYSTICK_TYPE_UNKNOWN:
 			return "unknown";
-		case SDL_JOYSTICK_TYPE_GAMECONTROLLER:
-			return "game controller";
+		case SDL_JOYSTICK_TYPE_GAMEPAD:
+			return "game pad";
 		case SDL_JOYSTICK_TYPE_WHEEL:
 			return "wheel";
 		case SDL_JOYSTICK_TYPE_ARCADE_STICK:

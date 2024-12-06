@@ -9,7 +9,7 @@ typedef void SDL_Haptic;
 
 #define SDL_HAPTIC_CONSTANT   (1u<<0)
 #define SDL_HAPTIC_SINE       (1u<<1)
-#define SDL_HAPTIC_LEFTRIGHT     (1u<<2)
+#define SDL_HAPTIC_SQUARE     (1u<<2)
 #define SDL_HAPTIC_TRIANGLE   (1u<<3)
 #define SDL_HAPTIC_SAWTOOTHUP (1u<<4)
 #define SDL_HAPTIC_SAWTOOTHDOWN (1u<<5)
@@ -18,11 +18,20 @@ typedef void SDL_Haptic;
 #define SDL_HAPTIC_DAMPER     (1u<<8)
 #define SDL_HAPTIC_INERTIA    (1u<<9)
 #define SDL_HAPTIC_FRICTION   (1u<<10)
-#define SDL_HAPTIC_CUSTOM     (1u<<11)
-#define SDL_HAPTIC_GAIN       (1u<<12)
-#define SDL_HAPTIC_AUTOCENTER (1u<<13)
-#define SDL_HAPTIC_STATUS     (1u<<14)
-#define SDL_HAPTIC_PAUSE      (1u<<15)
+
+#define SDL_HAPTIC_LEFTRIGHT    (1u<<11)
+
+#define SDL_HAPTIC_RESERVED1    (1u<<12)
+#define SDL_HAPTIC_RESERVED2    (1u<<13)
+#define SDL_HAPTIC_RESERVED3    (1u<<14)
+
+#define SDL_HAPTIC_CUSTOM       (1u<<15)
+
+#define SDL_HAPTIC_GAIN       (1u<<16)
+#define SDL_HAPTIC_AUTOCENTER (1u<<17)
+
+#define SDL_HAPTIC_STATUS     (1u<<18)
+#define SDL_HAPTIC_PAUSE      (1u<<19)
 
 #define SDL_HAPTIC_POLAR      0
 #define SDL_HAPTIC_CARTESIAN  1
