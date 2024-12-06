@@ -50,8 +50,8 @@ bool (*SDL_IsGamepad)(int joystick_index);
 const char *(*SDL_GetError)();
 
 const char *lib_paths[] = {
-	"./libSDL2-2.0.so.0",
-	"./libSDL2-2.0.0.dylib"
+	"./libSDL3.so.0",
+	"./libSDL3.0.dylib"
 };
 
 void init_sdl_bindings(){

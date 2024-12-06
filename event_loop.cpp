@@ -19,9 +19,8 @@ void sdl_event_loop(const char *log_path){
 	}
 	LOG("opened %s for event logging\n", log_path);
 
-	int ret = SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);
-	if(ret != 0){
-		LOG_ERR("failed initializing SDL, terminating\n");
+	if(!SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC)){
+		LOG_ERR("failed initializing SDL, %s, terminating\n", SDL_GetError());
 		exit(1);
 	}
 	sdl_initialized = true;

@@ -211,7 +211,7 @@ static std::string run_haptic_test_routine(){
 		#define ASSERT_EFFECT_SUPPORTED(t) { \
 			SDL_HapticEffect e; \
 			e.type = t; \
-			ASSERT((haptic, &e)); \
+			ASSERT(SDL_HapticEffectSupported(haptic, &e)); \
 		}
 		#define ASSERT_EFFECT_NOT_SUPPORTED(t) { \
 			SDL_HapticEffect e; \
