@@ -61,7 +61,7 @@ extern bool (*SDL_StopHapticRumble)(SDL_Haptic * haptic);
 
 extern bool (*SDL_IsGamepad)(int joystick_index);
 
-extern char *(SDL_GetError)();
+extern char *(*SDL_GetError)();
 
 void init_sdl_bindings();
 
