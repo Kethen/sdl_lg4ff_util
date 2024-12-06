@@ -251,7 +251,7 @@ static std::string run_haptic_test_routine(){
 		LOG("Playing effect, please verify that it is running\n");
 		sleep(1);
 		ASSERT(SDL_GetHapticEffectStatus(haptic, constant_effect_id));
-		sleep(5);
+		sleep(6);
 		ASSERT(!SDL_GetHapticEffectStatus(haptic, constant_effect_id));
 		LOG("Effect should have stopped naturally, please verify\n");
 		sleep(3);
@@ -288,7 +288,7 @@ static std::string run_haptic_test_routine(){
 		LOG("Testing Rumble\n");
 		ASSERT(SDL_InitHapticRumble(haptic));
 		ASSERT(SDL_PlayHapticRumble(haptic, 0.5, 5000));
-		sleep(6);
+		sleep(5);
 		LOG("Rumble should have naturally stopped now, please verify\n");
 		sleep(3);
 
@@ -358,7 +358,7 @@ static std::string run_haptic_test_routine(){
 		int ramp_effect_id = SDL_CreateHapticEffect(haptic, &effect);
 		ASSERT(ramp_effect_id == 4);
 		ASSERT(SDL_RunHapticEffect(haptic, ramp_effect_id, 1));
-		sleep(6);
+		sleep(5);
 		LOG("Ramp effect should have stopped natrually\n");
 		sleep(3);
 		
