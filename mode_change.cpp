@@ -4,8 +4,8 @@
 #include "device_ids.h"
 #include "logging.h"
 
-static int hid_write(SDL_Joystick *joystick, uint8_t *buf, size_t size){
-	return SDL_JoystickSendEffect(joystick, buf, size);
+static bool hid_write(SDL_Joystick *joystick, uint8_t *buf, size_t size){
+	return SDL_SendJoystickEffect(joystick, buf, size);
 }
 
 int mode_change(SDL_Joystick *joystick, int mode){
@@ -46,7 +46,7 @@ int mode_change(SDL_Joystick *joystick, int mode){
 			exit(1);
 		}
 	}
-	if(ret <= 0){
+	if(!ret){
 		return -1;
 	}
 	return 0;

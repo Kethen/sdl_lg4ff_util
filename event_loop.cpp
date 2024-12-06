@@ -19,51 +19,53 @@ void sdl_event_loop(const char *log_path){
 	}
 	LOG("opened %s for event logging\n", log_path);
 
-	int ret = SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC);
+	int ret = SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);
 	if(ret != 0){
 		LOG_ERR("failed initializing SDL, terminating\n");
 		exit(1);
 	}
 	sdl_initialized = true;
 
-	SDL_JoystickEventState(SDL_ENABLE);
+	SDL_SetJoystickEventsEnabled(true);
 
 	while(true){
 		SDL_Event event = {0};
-		SDL_WaitEvent(&event);
+		if(!SDL_WaitEvent(&event)){
+			continue;
+		}
 
 		switch(event.type){
-			case SDL_JOYDEVICEADDED:{
+			case SDL_EVENT_JOYSTICK_ADDED:{
 				SDL_JoyDeviceEvent *e = (SDL_JoyDeviceEvent *)&event;
-				SDL_Joystick *handle = SDL_JoystickOpen(e->which);
-				bool is_controller = SDL_IsGameController(e->which);
+				SDL_Joystick *handle = SDL_OpenJoystick(e->which);
+				bool is_controller = SDL_IsGamepad(e->which);
 				if(handle == NULL){
 					log_out << std::format("failed opening joy device with index {:d}\n", e->which) << std::flush;
 					break;
 				}
-				SDL_JoystickID id = SDL_JoystickInstanceID(handle);
+				SDL_JoystickID id = SDL_GetJoystickID(handle);
 				joystick_ref ref = {
 					.handle = handle,
-					.vendor_id = SDL_JoystickGetVendor(handle),
-					.device_id = SDL_JoystickGetProduct(handle),
-					.type = SDL_JoystickGetType(handle),
+					.vendor_id = SDL_GetJoystickVendor(handle),
+					.device_id = SDL_GetJoystickProduct(handle),
+					.type = SDL_GetJoystickType(handle),
 					.is_controller = is_controller,
 				};
 				memset(ref.path, 0, sizeof(ref.path));
-				strncpy(ref.path, SDL_JoystickPath(handle), sizeof(ref.path) - 1);
+				strncpy(ref.path, SDL_GetJoystickPath(handle), sizeof(ref.path) - 1);
 				if(device_supported(ref.vendor_id, ref.device_id)){
 					opened_joystick_map_mutex.lock();
 					opened_joystick_map[id] = ref;
 					opened_joystick_map_mutex.unlock();
 					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
-					log_out << std::format("hats: {:d}, buttons: {:d}, axes: {:d}\n", SDL_JoystickNumHats(handle), SDL_JoystickNumButtons(handle), SDL_JoystickNumAxes(handle)) << std::flush;
+					log_out << std::format("hats: {:d}, buttons: {:d}, axes: {:d}\n", SDL_GetNumJoystickHats(handle), SDL_GetNumJoystickButtons(handle), SDL_GetNumJoystickAxes(handle)) << std::flush;
 				}else{
 					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
-					SDL_JoystickClose(handle);
+					SDL_CloseJoystick(handle);
 				}
 				break;
 			}
-			case SDL_JOYDEVICEREMOVED:{
+			case SDL_EVENT_JOYSTICK_REMOVED:{
 				SDL_JoyDeviceEvent *e = (SDL_JoyDeviceEvent *)&event;
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){
@@ -72,16 +74,16 @@ void sdl_event_loop(const char *log_path){
 				}
 				break;
 			}
-			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:{
+			case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+			case SDL_EVENT_JOYSTICK_BUTTON_UP:{
 				SDL_JoyButtonEvent *e = (SDL_JoyButtonEvent *)&event;
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){
-					log_out << std::format("i: {:d} v: {:#04x} d: {:#04x} button: {:d} {:d}\n", e->which, ref.vendor_id, ref.device_id, e->button, e->state) << std::flush;
+					log_out << std::format("ic: {:d} v: {:#04x} d: {:#04x} button: {:d} {:d}\n", e->which, ref.vendor_id, ref.device_id, e->button, e->down) << std::flush;
 				}
 				break;
 			}
-			case SDL_JOYHATMOTION:{
+			case SDL_EVENT_JOYSTICK_HAT_MOTION:{
 				SDL_JoyHatEvent *e = (SDL_JoyHatEvent *)&event;
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){
@@ -89,7 +91,7 @@ void sdl_event_loop(const char *log_path){
 				}
 				break;
 			}
-			case SDL_JOYAXISMOTION:{
+			case SDL_EVENT_JOYSTICK_AXIS_MOTION:{
 				SDL_JoyAxisEvent *e = (SDL_JoyAxisEvent *)&event;
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){

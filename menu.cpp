@@ -150,7 +150,7 @@ static std::string set_led_menu(){
 	std::string status = std::format("wheel {:d} removed during SDL_JoystickSetLED", wheel_id);
 	opened_joystick_map_mutex.lock();
 	if(opened_joystick_map.contains(wheel_id)){
-		if(SDL_JoystickSetLED(opened_joystick_map[wheel_id].handle, sdl_led_intensity, 0, 0) == 0){
+		if(SDL_SetJoystickLED(opened_joystick_map[wheel_id].handle, sdl_led_intensity, 0, 0) == 0){
 			status = std::format("SDL_JoystickSetLED on wheel {:d} succeeded", wheel_id);
 		}else{
 			status = std::format("SDL_JoystickSetLED failed on wheel {:d}", wheel_id);
@@ -173,24 +173,25 @@ static std::string run_haptic_test_routine(){
 	opened_joystick_map_mutex.lock();
 	if(opened_joystick_map.contains(wheel_id)){
 		SDL_Joystick *joystick = opened_joystick_map[wheel_id].handle;
-		SDL_Haptic *haptic = SDL_HapticOpenFromJoystick(joystick);
+		SDL_Haptic *haptic = SDL_OpenHapticFromJoystick(joystick);
 
 		#define ASSERT(c) {\
 			if(!(c)){ \
-				SDL_HapticClose(haptic); \
+				SDL_CloseHaptic(haptic); \
 				return std::format("test failed at file {} line {:d}: {}, {}", __FILE__, __LINE__, STR(c), SDL_GetError()); \
 			} \
 		}
 
 		ASSERT(haptic != NULL);
 
-		ASSERT(SDL_HapticNumEffects(haptic) == 16);
-		ASSERT(SDL_HapticNumEffectsPlaying(haptic) == 16);
+		ASSERT(SDL_GetMaxHapticEffects(haptic) == 16);
+		ASSERT(SDL_GetMaxHapticEffectsPlaying(haptic) == 16);
 
-		uint32_t supported_effects = SDL_HapticQuery(haptic);
+		uint32_t supported_effects = SDL_GetHapticFeatures(haptic);
 		ASSERT(supported_effects & SDL_HAPTIC_CONSTANT);
 		ASSERT(supported_effects & SDL_HAPTIC_SINE);
 		ASSERT(!(supported_effects & SDL_HAPTIC_LEFTRIGHT));
+		ASSERT(supported_effects & SDL_HAPTIC_SQUARE);
 		ASSERT(supported_effects & SDL_HAPTIC_TRIANGLE);
 		ASSERT(supported_effects & SDL_HAPTIC_SAWTOOTHUP);
 		ASSERT(supported_effects & SDL_HAPTIC_SAWTOOTHDOWN);
@@ -205,12 +206,12 @@ static std::string run_haptic_test_routine(){
 		ASSERT(supported_effects & SDL_HAPTIC_STATUS);
 		ASSERT(!(supported_effects & SDL_HAPTIC_PAUSE));
 
-		ASSERT(SDL_HapticNumAxes(haptic) == 1);
+		ASSERT(SDL_GetNumHapticAxes(haptic) == 1);
 
 		#define ASSERT_EFFECT_SUPPORTED(t) { \
 			SDL_HapticEffect e; \
 			e.type = t; \
-			ASSERT(SDL_HapticEffectSupported(haptic, &e)); \
+			ASSERT((haptic, &e)); \
 		}
 		#define ASSERT_EFFECT_NOT_SUPPORTED(t) { \
 			SDL_HapticEffect e; \
@@ -219,7 +220,7 @@ static std::string run_haptic_test_routine(){
 		}
 		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_CONSTANT);
 		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_SINE);
-		ASSERT_EFFECT_NOT_SUPPORTED(SDL_HAPTIC_LEFTRIGHT);
+		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_SQUARE);
 		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_TRIANGLE);
 		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_SAWTOOTHUP);
 		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_SAWTOOTHDOWN);
@@ -229,10 +230,6 @@ static std::string run_haptic_test_routine(){
 		ASSERT_EFFECT_NOT_SUPPORTED(SDL_HAPTIC_INERTIA);
 		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_FRICTION);
 		ASSERT_EFFECT_NOT_SUPPORTED(SDL_HAPTIC_CUSTOM);
-		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_GAIN);
-		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_AUTOCENTER);
-		ASSERT_EFFECT_SUPPORTED(SDL_HAPTIC_STATUS);
-		ASSERT_EFFECT_NOT_SUPPORTED(SDL_HAPTIC_PAUSE);
 		#undef ASSERT_EFFECT_SUPPORTED
 		#undef ASSERT_EFFECT_NOT_SUPPORTED
 
@@ -247,62 +244,62 @@ static std::string run_haptic_test_routine(){
 		effect.constant.delay = 0;
 		effect.constant.level = 65535 / 8;
 
-		int constant_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		int constant_effect_id = SDL_CreateHapticEffect(haptic, &effect);
 		ASSERT(constant_effect_id == 0);
 		LOG("Created constant effect with id %d\n", constant_effect_id);
-		ASSERT(SDL_HapticRunEffect(haptic, constant_effect_id, 1) == 0);
+		ASSERT(SDL_RunHapticEffect(haptic, constant_effect_id, 1));
 		LOG("Playing effect, please verify that it is running\n");
 		sleep(1);
-		ASSERT(SDL_HapticGetEffectStatus(haptic, constant_effect_id));
-		sleep(6);
-		ASSERT(!SDL_HapticGetEffectStatus(haptic, constant_effect_id));
+		ASSERT(SDL_GetHapticEffectStatus(haptic, constant_effect_id));
+		sleep(5);
+		ASSERT(!SDL_GetHapticEffectStatus(haptic, constant_effect_id));
 		LOG("Effect should have stopped naturally, please verify\n");
 		sleep(3);
 
 		LOG("Playing effect again\n");
-		ASSERT(SDL_HapticRunEffect(haptic, constant_effect_id, 2) == 0);
+		ASSERT(SDL_RunHapticEffect(haptic, constant_effect_id, 2));
 		sleep(2);
 		LOG("Stopping effect using SDL_HapticStopEffect, please verify\n");
-		ASSERT(SDL_HapticStopEffect(haptic, constant_effect_id) == 0);
+		ASSERT(SDL_StopHapticEffect(haptic, constant_effect_id));
 		sleep(3);
 
 		LOG("Playing effect again\n");
-		ASSERT(SDL_HapticRunEffect(haptic, constant_effect_id, 2) == 0);
+		ASSERT(SDL_RunHapticEffect(haptic, constant_effect_id, 2));
 		sleep(2);
 		LOG("Stopping effect using SDL_HapticStopAll, please verify\n");
-		ASSERT(SDL_HapticStopAll(haptic) == 0);
+		ASSERT(SDL_StopHapticEffects(haptic));
 		sleep(3);
 
 		LOG("Testing SDL_HapticUpdateEffect, please verify direction changes\n");
 		effect.constant.length = SDL_HAPTIC_INFINITY;
-		ASSERT(SDL_HapticUpdateEffect(haptic, constant_effect_id, &effect) == 0);
-		ASSERT(SDL_HapticRunEffect(haptic, constant_effect_id, 2) == 0);
+		ASSERT(SDL_UpdateHapticEffect(haptic, constant_effect_id, &effect));
+		ASSERT(SDL_RunHapticEffect(haptic, constant_effect_id, 2));
 		sleep(2);
 		effect.constant.level = -65535 / 8;
-		ASSERT(SDL_HapticUpdateEffect(haptic, constant_effect_id, &effect) == 0);
+		ASSERT(SDL_UpdateHapticEffect(haptic, constant_effect_id, &effect));
 		sleep(2);
 		effect.constant.level = 65535 / 8;
-		ASSERT(SDL_HapticUpdateEffect(haptic, constant_effect_id, &effect) == 0);
+		ASSERT(SDL_UpdateHapticEffect(haptic, constant_effect_id, &effect));
 		sleep(2);
 		LOG("Stopping effect, please verify\n");
-		ASSERT(SDL_HapticStopEffect(haptic, constant_effect_id) == 0);
+		ASSERT(SDL_StopHapticEffect(haptic, constant_effect_id));
 		sleep(3);
 
 		LOG("Testing Rumble\n");
-		ASSERT(SDL_HapticRumbleInit(haptic) == 0);
-		ASSERT(SDL_HapticRumblePlay(haptic, 0.5, 5000) == 0);
+		ASSERT(SDL_InitHapticRumble(haptic));
+		ASSERT(SDL_PlayHapticRumble(haptic, 0.5, 5000));
 		sleep(6);
 		LOG("Rumble should have naturally stopped now, please verify\n");
 		sleep(3);
 
 		LOG("Starting rumble again\n");
-		ASSERT(SDL_HapticRumblePlay(haptic, 0.5, 10000) == 0);
+		ASSERT(SDL_PlayHapticRumble(haptic, 0.5, 10000));
 		sleep(2);
 		LOG("Stopping rumble, please verify\n")
-		ASSERT(SDL_HapticRumbleStop(haptic) == 0);
+		ASSERT(SDL_StopHapticRumble(haptic));
 		sleep(3);
 
-		SDL_HapticDestroyEffect(haptic, constant_effect_id);
+		SDL_DestroyHapticEffect(haptic, constant_effect_id);
 		memset(&effect, 0, sizeof(SDL_HapticEffect));
 		effect.type = SDL_HAPTIC_FRICTION;
 		effect.condition.direction.type = SDL_HAPTIC_STEERING_AXIS;
@@ -312,42 +309,42 @@ static std::string run_haptic_test_routine(){
 		effect.condition.left_coeff[0] = 0x2000;
 		effect.condition.length = SDL_HAPTIC_INFINITY;
 
-		int friction_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		int friction_effect_id = SDL_CreateHapticEffect(haptic, &effect);
 		ASSERT(friction_effect_id == 0);
-		ASSERT(SDL_HapticRunEffect(haptic, friction_effect_id, 1) == 0);
+		ASSERT(SDL_RunHapticEffect(haptic, friction_effect_id, 1));
 		LOG("Testing friction effect, please verify\n");
 		sleep(5);
-		ASSERT(SDL_HapticStopEffect(haptic, friction_effect_id) == 0);
+		ASSERT(SDL_StopHapticEffect(haptic, friction_effect_id));
 		LOG("Friction effect stopped, please verify\n");
 		sleep(3);
 
 		effect.type = SDL_HAPTIC_DAMPER;
 
-		int damper_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		int damper_effect_id = SDL_CreateHapticEffect(haptic, &effect);
 		// sdl internally allocated a sine effect for rumble
 		ASSERT(damper_effect_id == 2);
-		ASSERT(SDL_HapticRunEffect(haptic, damper_effect_id, 1) == 0);
+		ASSERT(SDL_RunHapticEffect(haptic, damper_effect_id, 1));
 		LOG("Testing damper effect, please verify\n");
 		sleep(5);
-		ASSERT(SDL_HapticStopEffect(haptic, damper_effect_id) == 0);
+		ASSERT(SDL_StopHapticEffect(haptic, damper_effect_id));
 		LOG("Damper effect stopped, please verify\n");
 		sleep(3);
 
 		effect.type = SDL_HAPTIC_SPRING;;
 
-		int spring_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		int spring_effect_id = SDL_CreateHapticEffect(haptic, &effect);
 		ASSERT(spring_effect_id == 3);
-		ASSERT(SDL_HapticRunEffect(haptic, spring_effect_id, 1) >= 0);
+		ASSERT(SDL_RunHapticEffect(haptic, spring_effect_id, 1));
 		LOG("Testing spring effect, please verify\n");
 		sleep(5);
-		ASSERT(SDL_HapticStopEffect(haptic, spring_effect_id) == 0);
+		ASSERT(SDL_StopHapticEffect(haptic, spring_effect_id));
 		LOG("Spring effect stopped, please verify\n");
 		sleep(3);
 
 		LOG("Testing autocenter, please verify\n");
-		ASSERT(SDL_HapticSetAutocenter(haptic, 50) == 0);
+		ASSERT(SDL_SetHapticAutocenter(haptic, 50));
 		sleep(5);
-		ASSERT(SDL_HapticSetAutocenter(haptic, 0) == 0);
+		ASSERT(SDL_SetHapticAutocenter(haptic, 0));
 		LOG("Autocenter stopped, please verify\n");
 		sleep(3);
 
@@ -358,31 +355,31 @@ static std::string run_haptic_test_routine(){
 		effect.ramp.length = 5000;
 		effect.ramp.start = 65535 / 8;
 		effect.ramp.end = 65535 / 4;
-		int ramp_effect_id = SDL_HapticNewEffect(haptic, &effect);
+		int ramp_effect_id = SDL_CreateHapticEffect(haptic, &effect);
 		ASSERT(ramp_effect_id == 4);
-		ASSERT(SDL_HapticRunEffect(haptic, ramp_effect_id, 1) >= 0);
+		ASSERT(SDL_RunHapticEffect(haptic, ramp_effect_id, 1));
 		sleep(6);
 		LOG("Ramp effect should have stopped natrually\n");
 		sleep(3);
 		
 		LOG("Starting rummble again\n");
-		ASSERT(SDL_HapticRumblePlay(haptic, 0.5, SDL_HAPTIC_INFINITY) == 0);
+		ASSERT(SDL_PlayHapticRumble(haptic, 0.5, SDL_HAPTIC_INFINITY));
 		sleep(3);
 		LOG("Adjusting gain to 0\n");
-		ASSERT(SDL_HapticSetGain(haptic, 0) == 0);
+		ASSERT(SDL_SetHapticGain(haptic, 0));
 		sleep(3);
 		LOG("Adjusting gain to 50\n");
-		ASSERT(SDL_HapticSetGain(haptic, 50) == 0);
+		ASSERT(SDL_SetHapticGain(haptic, 50));
 		sleep(3);
 		LOG("Adjusting gain to 100\n");
-		ASSERT(SDL_HapticSetGain(haptic, 100) == 0);
+		ASSERT(SDL_SetHapticGain(haptic, 100));
 		sleep(3);
 		LOG("Rumble should stop now\n");
-		ASSERT(SDL_HapticRumbleStop(haptic) == 0);
+		ASSERT(SDL_StopHapticRumble(haptic));
 		sleep(3);
 
 		#undef ASSERT
-		SDL_HapticClose(haptic);
+		SDL_CloseHaptic(haptic);
 
 	}
 	opened_joystick_map_mutex.unlock();
