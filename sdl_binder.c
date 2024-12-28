@@ -23,7 +23,7 @@ bool (*SDL_SendJoystickEffect)(SDL_Joystick *joystick, const void *data, int siz
 bool (*SDL_SetJoystickLED)(SDL_Joystick *joystick, Uint8 red, Uint8 green, Uint8 blue);
 void (*SDL_CloseJoystick)(SDL_Joystick *joystick);
 SDL_JoystickType (*SDL_GetJoystickType)(SDL_Joystick *joystick);
-
+const char *(*SDL_GetJoystickName)(SDL_Joystick *joystick);
 SDL_Haptic *(*SDL_OpenHapticFromJoystick)(SDL_Joystick *joystick);
 void (*SDL_CloseHaptic)(SDL_Haptic * haptic);
 int (*SDL_GetMaxHapticEffects)(SDL_Haptic * haptic);
@@ -94,6 +94,7 @@ void init_sdl_bindings(){
 	LOAD_FUNCTION(SDL_SetJoystickLED);
 	LOAD_FUNCTION(SDL_CloseJoystick);
 	LOAD_FUNCTION(SDL_GetJoystickType);
+	LOAD_FUNCTION(SDL_GetJoystickName);
 
 	LOAD_FUNCTION(SDL_OpenHapticFromJoystick);
 	LOAD_FUNCTION(SDL_CloseHaptic);
