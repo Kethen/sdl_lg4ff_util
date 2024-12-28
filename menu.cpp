@@ -37,6 +37,7 @@ static void print_actions(std::string status){
 	LOG("1. Change wheel mode\n");
 	LOG("2. Set wheel LED\n");
 	LOG("3. Run FFB test routine\n");
+	LOG("4. Close devices and quit\n");
 	LOG("\n\n")
 
 	LOG("Status:\n");
@@ -399,6 +400,23 @@ static std::string run_haptic_test_routine(){
 	return std::string("haptic test routine finished");
 }
 
+void close_devices_quit(){
+	auto map_copy = get_opened_joystick_map_copy();
+	auto itr = map_copy.begin();
+	int ret = 0;
+	while(itr != map_copy.end()){
+		LOG("closing %d. %04x:%04x %s %s %s\n", itr->first, itr->second.vendor_id, itr->second.device_id, itr->second.path, itr->second.name, joystick_get_type_name(itr->second.type).c_str());
+		SDL_Joystick *handle = itr->second.handle;
+		SDL_JoystickClose(handle);
+		if(SDL_JoystickInstanceID(handle) != -1){
+			LOG("warning: joystick did not close fully\n");
+			ret = -1;
+		}
+		itr++;
+	}
+	exit(ret);
+}
+
 void menu_loop(std::string log_path){
 	std::string status = std::format("Events are logged at {}", log_path);
 
@@ -415,6 +433,8 @@ void menu_loop(std::string log_path){
 			case 3:
 				status = run_haptic_test_routine();
 				break;
+			case 4:
+				close_devices_quit();
 			default:
 				status = std::format("bad option {:d}", input_val);
 		}
