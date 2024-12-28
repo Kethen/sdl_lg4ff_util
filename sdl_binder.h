@@ -38,6 +38,7 @@ extern bool (*SDL_SetJoystickLED)(SDL_Joystick *joystick, Uint8 red, Uint8 green
 extern void (*SDL_CloseJoystick)(SDL_Joystick *joystick);
 extern SDL_JoystickType (*SDL_GetJoystickType)(SDL_Joystick *joystick);
 extern const char *(*SDL_GetJoystickName)(SDL_Joystick *joystick);
+extern SDL_PropertiesID (*SDL_GetJoystickProperties)(SDL_Joystick *joystick);
 
 extern SDL_Haptic *(*SDL_OpenHapticFromJoystick)(SDL_Joystick *joystick);
 extern void (*SDL_CloseHaptic)(SDL_Haptic * haptic);
@@ -63,6 +64,8 @@ extern bool (*SDL_StopHapticRumble)(SDL_Haptic * haptic);
 extern bool (*SDL_IsGamepad)(int joystick_index);
 
 extern char *(*SDL_GetError)();
+
+extern bool (*SDL_GetBooleanProperty)(SDL_PropertiesID props, const char *name, bool default_value);
 
 void init_sdl_bindings();
 

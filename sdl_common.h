@@ -18,4 +18,6 @@ typedef struct SDL_GUID {
     Uint8 data[16];
 } SDL_GUID;
 
+typedef Uint32 SDL_PropertiesID;
+
 #endif //__SDL_COMMON_H

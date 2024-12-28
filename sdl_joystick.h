@@ -22,6 +22,8 @@ typedef void SDL_Joystick;
 #define SDL_HAT_LEFTDOWN    (SDL_HAT_LEFT|SDL_HAT_DOWN)
 /* @} */
 
+#define SDL_PROP_JOYSTICK_CAP_MONO_LED_BOOLEAN          "SDL.joystick.cap.mono_led"
+
 typedef enum
 {
     SDL_JOYSTICK_TYPE_UNKNOWN,

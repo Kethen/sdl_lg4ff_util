@@ -24,6 +24,8 @@ bool (*SDL_SetJoystickLED)(SDL_Joystick *joystick, Uint8 red, Uint8 green, Uint8
 void (*SDL_CloseJoystick)(SDL_Joystick *joystick);
 SDL_JoystickType (*SDL_GetJoystickType)(SDL_Joystick *joystick);
 const char *(*SDL_GetJoystickName)(SDL_Joystick *joystick);
+SDL_PropertiesID (*SDL_GetJoystickProperties)(SDL_Joystick *joystick);
+
 SDL_Haptic *(*SDL_OpenHapticFromJoystick)(SDL_Joystick *joystick);
 void (*SDL_CloseHaptic)(SDL_Haptic * haptic);
 int (*SDL_GetMaxHapticEffects)(SDL_Haptic * haptic);
@@ -48,6 +50,8 @@ bool (*SDL_StopHapticRumble)(SDL_Haptic * haptic);
 bool (*SDL_IsGamepad)(int joystick_index);
 
 const char *(*SDL_GetError)();
+
+bool (*SDL_GetBooleanProperty)(SDL_PropertiesID props, const char *name, bool default_value);
 
 const char *lib_paths[] = {
 	"./libSDL3.so.0",
@@ -95,6 +99,7 @@ void init_sdl_bindings(){
 	LOAD_FUNCTION(SDL_CloseJoystick);
 	LOAD_FUNCTION(SDL_GetJoystickType);
 	LOAD_FUNCTION(SDL_GetJoystickName);
+	LOAD_FUNCTION(SDL_GetJoystickProperties);
 
 	LOAD_FUNCTION(SDL_OpenHapticFromJoystick);
 	LOAD_FUNCTION(SDL_CloseHaptic);
@@ -120,6 +125,8 @@ void init_sdl_bindings(){
 	LOAD_FUNCTION(SDL_IsGamepad);
 
 	LOAD_FUNCTION(SDL_GetError);
+
+	LOAD_FUNCTION(SDL_GetBooleanProperty);
 	#undef STR
 	#undef LOAD_FUNCTION
 }
