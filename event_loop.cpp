@@ -50,15 +50,19 @@ void sdl_event_loop(const char *log_path){
 					.is_controller = is_controller,
 				};
 				memset(ref.path, 0, sizeof(ref.path));
-				strncpy(ref.path, SDL_JoystickPath(handle), sizeof(ref.path) - 1);
+				const char *path = SDL_JoystickPath(handle);
+				strncpy(ref.path, path == NULL ? SDL_GetError() : path, sizeof(ref.path) - 1);
+				memset(ref.name, 0, sizeof(ref.name));
+				const char *name = SDL_JoystickName(handle);
+				strncpy(ref.name, name == NULL ? SDL_GetError() : name, sizeof(ref.name) - 1);
 				if(device_supported(ref.vendor_id, ref.device_id)){
 					opened_joystick_map_mutex.lock();
 					opened_joystick_map[id] = ref;
 					opened_joystick_map_mutex.unlock();
-					log_out << std::format("opened joydevice {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
+					log_out << std::format("opened joydevice {} {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, ref.name, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
 					log_out << std::format("hats: {:d}, buttons: {:d}, axes: {:d}\n", SDL_JoystickNumHats(handle), SDL_JoystickNumButtons(handle), SDL_JoystickNumAxes(handle)) << std::flush;
 				}else{
-					log_out << std::format("ignoring device {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
+					log_out << std::format("ignoring device {} {} i: {:d} v: {:#04x} d: {:#04x} t: {} controller: {}\n", ref.path, ref.name, id, ref.vendor_id, ref.device_id, joystick_get_type_name(ref.type), ref.is_controller ? "yes" : "no") << std::flush;
 					SDL_JoystickClose(handle);
 				}
 				break;

@@ -52,6 +52,7 @@ extern void (*SDL_JoystickClose)(SDL_Joystick *joystick);
 extern int (*SDL_JoystickSetLED)(SDL_Joystick *joystick, Uint8 red, Uint8 green, Uint8 blue);
 extern int (*SDL_JoystickSendEffect)(SDL_Joystick *joystick, const void *data, int size);
 extern SDL_JoystickType (*SDL_JoystickGetType)(SDL_Joystick *joystick);
+extern const char *(*SDL_JoystickName)(SDL_Joystick *joystick);
 
 extern SDL_Haptic *(*SDL_HapticOpenFromJoystick)(SDL_Joystick *joystick);
 extern void (*SDL_HapticClose)(SDL_Haptic * haptic);
