@@ -71,8 +71,14 @@ void sdl_event_loop(const char *log_path){
 				SDL_JoyDeviceEvent *e = (SDL_JoyDeviceEvent *)&event;
 				joystick_ref ref = get_joystick_ref_copy(e->which);
 				if(ref.handle != NULL){
+					SDL_JoystickClose(ref.handle);
 					remove_joystick_ref(e->which);
 					log_out << std::format("removed joydevice {} i: {:d} v: {:#04x} d: {:#04x}\n", ref.path, e->which, ref.vendor_id, ref.device_id) << std::flush;
+					if(SDL_JoystickInstanceID(ref.handle) != -1){
+						log_out << std::format("warning, dangling joystick reference {:#016x}\n", (uint64_t)ref.handle) << std::flush;
+					}
+				}else{
+					log_out << std::format("untracked device {} removed\n", e->which) << std::flush;
 				}
 				break;
 			}
