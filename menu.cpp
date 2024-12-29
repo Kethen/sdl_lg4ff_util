@@ -151,7 +151,7 @@ static std::string set_led_menu(){
 	std::string status = std::format("wheel {:d} removed during SDL_JoystickSetLED", wheel_id);
 	opened_joystick_map_mutex.lock();
 	if(opened_joystick_map.contains(wheel_id)){
-		if(SDL_SetJoystickLED(opened_joystick_map[wheel_id].handle, sdl_led_intensity, 0, 0) == 0){
+		if(SDL_SetJoystickLED(opened_joystick_map[wheel_id].handle, sdl_led_intensity, 0, 0)){
 			status = std::format("SDL_JoystickSetLED on wheel {:d} succeeded", wheel_id);
 		}else{
 			status = std::format("SDL_JoystickSetLED failed on wheel {:d}", wheel_id);
