@@ -20,7 +20,7 @@ mkdir sdl_build
 cd sdl_build
 
 # configure project (Linux)
-../configure --enable-hidapi=yes --enable-hidapi-libusb=no # no idea why SDL2 hidapi libusb is not working on linux, while libhidapi works in https://github.com/Kethen/lg4ff_userspace
+../configure --enable-hidapi=yes --enable-hidapi-libusb=yes
 
 # configure project (FreeBSD)
 ../configure --enable-hidapi=yes --enable-hidapi-libusb=yes
