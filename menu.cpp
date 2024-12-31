@@ -179,6 +179,7 @@ static std::string run_haptic_test_routine(){
 		#define ASSERT(c) {\
 			if(!(c)){ \
 				SDL_CloseHaptic(haptic); \
+				opened_joystick_map_mutex.lock(); \
 				return std::format("test failed at file {} line {:d}: {}, {}", __FILE__, __LINE__, STR(c), SDL_GetError()); \
 			} \
 		}
