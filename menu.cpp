@@ -171,15 +171,22 @@ static std::string run_haptic_test_routine(){
 		return std::format("wheel id {:d} not found.", wheel_id);
 	}
 
+	SDL_Joystick *joystick = NULL;
+	SDL_Haptic *haptic = NULL;
 	opened_joystick_map_mutex.lock();
 	if(opened_joystick_map.contains(wheel_id)){
-		SDL_Joystick *joystick = opened_joystick_map[wheel_id].handle;
-		SDL_Haptic *haptic = SDL_HapticOpenFromJoystick(joystick);
+		joystick = opened_joystick_map[wheel_id].handle;
+		haptic = SDL_HapticOpenFromJoystick(joystick);
+	}
+	opened_joystick_map_mutex.unlock();
+	if(haptic == NULL){
+		return std::format("failed opening haptic from joystick {:d}\n", wheel_id);
+	}
 
+	{
 		#define ASSERT(c) {\
 			if(!(c)){ \
 				SDL_HapticClose(haptic); \
-				opened_joystick_map_mutex.unlock(); \
 				return std::format("test failed at file {} line {:d}: {}, {}", __FILE__, __LINE__, STR(c), SDL_GetError()); \
 			} \
 		}
@@ -240,13 +247,13 @@ static std::string run_haptic_test_routine(){
 		switch(opened_joystick_map[wheel_id].device_id){
 			case USB_DEVICE_ID_LOGITECH_G29_WHEEL:
 			case USB_DEVICE_ID_LOGITECH_G27_WHEEL:
-				ASSERT(SDL_JoystickHasLED(opened_joystick_map[wheel_id].handle));
+				ASSERT(SDL_JoystickHasLED(joystick));
 				break;
 			default:
-				ASSERT(!SDL_JoystickHasLED(opened_joystick_map[wheel_id].handle));
+				ASSERT(!SDL_JoystickHasLED(joystick));
 		}
 		#else
-		//ASSERT(!SDL_JoystickHasLED(opened_joystick_map[wheel_id].handle));
+		//ASSERT(!SDL_JoystickHasLED(joystick));
 		#endif
 
 		LOG("Capability check OK\n");
@@ -394,9 +401,7 @@ static std::string run_haptic_test_routine(){
 
 		#undef ASSERT
 		SDL_HapticClose(haptic);
-
 	}
-	opened_joystick_map_mutex.unlock();
 
 	return std::string("haptic test routine finished");
 }
