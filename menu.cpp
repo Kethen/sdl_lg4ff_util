@@ -171,15 +171,22 @@ static std::string run_haptic_test_routine(){
 		return std::format("wheel id {:d} not found.", wheel_id);
 	}
 
+	SDL_Joystick *joystick = NULL;
+	SDL_Haptic *haptic = NULL;
 	opened_joystick_map_mutex.lock();
 	if(opened_joystick_map.contains(wheel_id)){
-		SDL_Joystick *joystick = opened_joystick_map[wheel_id].handle;
-		SDL_Haptic *haptic = SDL_OpenHapticFromJoystick(joystick);
+		joystick = opened_joystick_map[wheel_id].handle;
+		haptic = SDL_OpenHapticFromJoystick(joystick);
+	}
+	opened_joystick_map_mutex.unlock();
+	if(haptic == NULL){
+		return std::format("failed opening haptic from joystick {:d}\n", wheel_id);
+	}
 
+	{
 		#define ASSERT(c) {\
 			if(!(c)){ \
 				SDL_CloseHaptic(haptic); \
-				opened_joystick_map_mutex.lock(); \
 				return std::format("test failed at file {} line {:d}: {}, {}", __FILE__, __LINE__, STR(c), SDL_GetError()); \
 			} \
 		}
@@ -395,7 +402,6 @@ static std::string run_haptic_test_routine(){
 		SDL_CloseHaptic(haptic);
 
 	}
-	opened_joystick_map_mutex.unlock();
 
 	return std::string("haptic test routine finished");
 }
