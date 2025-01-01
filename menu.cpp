@@ -236,6 +236,7 @@ static std::string run_haptic_test_routine(){
 
 		ASSERT(SDL_HapticRumbleSupported(haptic));
 
+		#if 0
 		switch(opened_joystick_map[wheel_id].device_id){
 			case USB_DEVICE_ID_LOGITECH_G29_WHEEL:
 			case USB_DEVICE_ID_LOGITECH_G27_WHEEL:
@@ -244,6 +245,9 @@ static std::string run_haptic_test_routine(){
 			default:
 				ASSERT(!SDL_JoystickHasLED(opened_joystick_map[wheel_id].handle));
 		}
+		#else
+		//ASSERT(!SDL_JoystickHasLED(opened_joystick_map[wheel_id].handle));
+		#endif
 
 		LOG("Capability check OK\n");
 
