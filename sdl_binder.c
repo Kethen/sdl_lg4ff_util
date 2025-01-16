@@ -1,4 +1,8 @@
+#ifndef __MINGW32__
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -55,8 +59,22 @@ bool (*SDL_GetBooleanProperty)(SDL_PropertiesID props, const char *name, bool de
 
 const char *lib_paths[] = {
 	"./libSDL3.so.0",
-	"./libSDL3.0.dylib"
+	"./libSDL3.0.dylib",
+	"./SDL3.dll"
 };
+
+#ifdef __MINGW32__
+#define RTLD_NOW 0
+
+void *dlopen(const char *path, uint32_t unused){
+	return LoadLibraryA(path);
+}
+
+void *dlsym(void *handle, const char *name){
+	return GetProcAddress(handle, name);
+}
+
+#endif
 
 void init_sdl_bindings(){
 	void *library_handle = NULL;
