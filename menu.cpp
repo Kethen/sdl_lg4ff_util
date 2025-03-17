@@ -253,7 +253,7 @@ static std::string run_haptic_test_routine(){
 				ASSERT(!SDL_JoystickHasLED(joystick));
 		}
 		#else
-		//ASSERT(!SDL_JoystickHasLED(joystick));
+		ASSERT(!SDL_JoystickHasLED(joystick));
 		#endif
 
 		LOG("Capability check OK\n");
